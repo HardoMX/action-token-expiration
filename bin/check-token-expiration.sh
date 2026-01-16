@@ -10,19 +10,20 @@ error_early="$4" # Trigger an error if true, before the token has actually expir
 current_date=$(date +%Y-%m-%d)
 rotation_warning_days=$(test "$error_early" = "true" && echo $((warn_days + 16)) || echo 16)
 
+
 # Set up colors
 green="\033[0;32m"
 yellow="\033[0;33m"
 red="\033[0;31m"
-nc="\033[0m]" #No Color
+nc="\033[0m" #No Color
 
 export GITHUB_TOKEN="${token}"
 
 # Get expiration date from Github API header
 expiration_date=$(curl -IsH 'authorization: token '"$token" https://api.github.com/repos/"${repository}" | grep 'github-authentication-token-expiration' | grep -Eo '[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}')
 
+
 # Calculate the time to token expiration so we can display a message.
-function check_token_expiration() {
     days_until_expiry=$(( ( $(date -d "$expiration_date" +%s) - $(date -d "$current_date" +%s) ) / 86400 ))
 
     expiration_message="This token will expire in ${days_until_expiry} days."
@@ -48,4 +49,3 @@ function check_token_expiration() {
     if [[ $days_until_expiry -le $rotation_warning_days ]]; then
         echo "Please make a plan to rotate the token in the next couple weeks."
     fi
-}

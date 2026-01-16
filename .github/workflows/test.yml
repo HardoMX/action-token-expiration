@@ -19,9 +19,8 @@ jobs:
       - name: Test Token Expiration
         uses: ./
         with:
-          expiration: "2024-12-01"
           token: ${{ secrets.API_TOKEN }}
-          token-name: "action-token-expiration test token"
+          repository: ${GITHUB_REPOSITORY}
           warn-days: 30
           error-early: true
       # - name: Test Non-expiring Token
@@ -30,4 +29,3 @@ jobs:
       #     expiration: '0000-00-00'
       #     token: ${{ secrets.GH_TOKEN }}
       #     token-name: "action-token-expiration autotag token"
-

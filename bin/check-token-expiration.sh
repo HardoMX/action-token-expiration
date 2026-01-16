@@ -3,43 +3,45 @@
 set -euo pipefail
 
 # Accept inputs from action configuration
-token_expiration="$1" # The date that the token is set to expire
-token="$2" # The token to check (unused in this script, but you can add logic to use it if needed)
-warn_days="$3" # The number of days before token expiration to start warning
-error_early="$4" # Trigger an error if true, before the token has actually expired
-token_name="$5" # The name of the token.
+token="$1" # The token to check (unused in this script, but you can add logic to use it if needed)
+warn_days="$2" # The number of days before token expiration to start warning
+error_early="$3" # Trigger an error if true, before the token has actually expired
+token_name="$4" # The name of the token.
 current_date=$(date +%Y-%m-%d)
 rotation_warning_days=$(test "$error_early" = "true" && echo $((warn_days + 16)) || echo 16)
 
+# Set up colors
+green="\033[0;32m"
+yellow="\033[0;33m"
+red="\033[0;31m"
+nc="\033[0m]" #No Color
+
 export GITHUB_TOKEN="${token}"
+
+# Get expiration date from Github API header
+expiration_date=$(curl -IsH 'authorization: token '$token https://api.github.com/repos/hardomx/nvim-containers | grep 'github-authentication-token-expiration' | grep -Eo '[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}')
 
 # Calculate the time to token expiration so we can display a message.
 function check_token_expiration() {
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS
-        days_until_expiry=$(echo $(($(date -jf "%Y-%m-%d" "$token_expiration" +%s) - $(date +%s))) | awk '{print int($1/86400)}')
-    else
-        # Linux and others
-        days_until_expiry=$(( ( $(date -d "$token_expiration" +%s) - $(date -d "$current_date" +%s) ) / 86400 ))
-    fi
+    days_until_expiry=$(( ( $(date -d "$expiration_date" +%s) - $(date -d "$current_date" +%s) ) / 86400 ))
 
     expiration_message="This token will expire in ${days_until_expiry} days."
 
     if [[ $days_until_expiry -le $warn_days ]]; then
         if [[ $error_early == "true" ]]; then
             # Display an error if the token is set to expire in the future.
-            echo "ERROR: ${expiration_message}. Please rotate the token now."
+            echo -e "${red}ERROR: ${expiration_message}. Please rotate the token now.${nc}"
             exit 1
         fi
         # Display a notice that the token is going to expire within the month.
-        echo "WARNING: ${expiration_message}"
+        echo -e "${yellow}WARNING: ${expiration_message}${nc}"
     elif [[ $days_until_expiry -le 0 ]]; then
         # Display an error if the token has already expired.
-        echo "ERROR: This token has expired."
+        echo -e "${red}ERROR: This token has expired.${nc}"
         exit 1
     else
         # Display a notice that says how many days are left on the token.
-        echo "${expiration_message}"
+        echo "${green}${expiration_message}${nc}"
     fi
 
     # Display a reminder to add token rotation to the upcoming sprint.
@@ -47,19 +49,3 @@ function check_token_expiration() {
         echo "Please make a plan to rotate the token in the next couple weeks."
     fi
 }
-
-# Check the authenticated user.
-function check_authenticated_user() {
-    token_type=$( test "$token_expiration" = '0000-00-00' && echo 'legacy, non-expiring' || echo 'fine-grained personal access' )
-    user=$(gh api /user | jq -r '"\(.name) (\(.login))"')
-    if [[ "$token_name" ]]; then
-        echo "Logged in as ${user} using the \"${token_name}\" ${token_type} token."
-    else 
-        echo "Logged in as ${user} using a ${token_type} token."
-    fi
-}
-
-check_authenticated_user
-if [[ $token_expiration != '0000-00-00' ]]; then
-    check_token_expiration
-fi

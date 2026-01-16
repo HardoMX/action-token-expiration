@@ -5,9 +5,6 @@ branding:
   icon: shield
   color: green
 inputs:
-  expiration:
-    description: The date that the token is set to expire.
-    required: true
   token:
     description: The token to check.
     required: true
@@ -28,3 +25,4 @@ runs:
     - name: Check Token Expiration
       shell: bash
       run: bash bin/check-token-expiration.sh "${{ inputs.expiration }}" "${{ inputs.token }}" "${{ inputs.warn-days }}" "${{ inputs.error-early }}" "${{ inputs.token-name }}"
+

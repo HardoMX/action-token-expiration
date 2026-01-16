@@ -4,9 +4,10 @@ set -euo pipefail
 
 # Accept inputs from action configuration
 token="$1" # The token to check (unused in this script, but you can add logic to use it if needed)
-warn_days="$2" # The number of days before token expiration to start warning
-error_early="$3" # Trigger an error if true, before the token has actually expired
-token_name="$4" # The name of the token.
+repository="$2"
+warn_days="$3" # The number of days before token expiration to start warning
+error_early="$4" # Trigger an error if true, before the token has actually expired
+token_name="$5" # The name of the token.
 current_date=$(date +%Y-%m-%d)
 rotation_warning_days=$(test "$error_early" = "true" && echo $((warn_days + 16)) || echo 16)
 
@@ -19,7 +20,7 @@ nc="\033[0m]" #No Color
 export GITHUB_TOKEN="${token}"
 
 # Get expiration date from Github API header
-expiration_date=$(curl -IsH 'authorization: token '$token https://api.github.com/repos/hardomx/nvim-containers | grep 'github-authentication-token-expiration' | grep -Eo '[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}')
+expiration_date=$(curl -IsH 'authorization: token '$token https://api.github.com/repos/${repository} | grep 'github-authentication-token-expiration' | grep -Eo '[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}')
 
 # Calculate the time to token expiration so we can display a message.
 function check_token_expiration() {

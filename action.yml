@@ -8,6 +8,9 @@ inputs:
   token:
     description: The token to check.
     required: true
+  repository:
+    description: The repository to check token against. Probably unnecessary, but required for now
+    required: true
   token-name:
     description: How the token is identified. This is helpful (but not required) to provide identifying information about which token is expiring.
     required: false
@@ -24,5 +27,4 @@ runs:
   steps:
     - name: Check Token Expiration
       shell: bash
-      run: bash bin/check-token-expiration.sh "${{ inputs.expiration }}" "${{ inputs.token }}" "${{ inputs.warn-days }}" "${{ inputs.error-early }}" "${{ inputs.token-name }}"
-
+      run: bash bin/check-token-expiration.sh ${{ inputs.token }}" "${{ inputs.repository }}" "${{ inputs.warn-days }}" "${{ inputs.error-early }}" "${{ inputs.token-name }}"

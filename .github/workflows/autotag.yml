@@ -13,4 +13,3 @@ jobs:
       - uses: pantheon-systems/action-autotag@main
         with:
           gh-token: ${{ secrets.GH_TOKEN }}
-

@@ -19,7 +19,7 @@ jobs:
       - name: Test Token Expiration
         uses: ./
         with:
-          token: ${{ secrets.API_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
           repository: ${GITHUB_REPOSITORY}
           warn-days: 30
           error-early: true

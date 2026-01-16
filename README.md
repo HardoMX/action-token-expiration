@@ -10,10 +10,10 @@ A GitHub action that will alert you if a required certificate has expired.
 This action was designed to notify repository maintainers of expiring GitHub Personal Access Tokens. It will check the expiration date of a token and, if it's within the specified threshold, will display a notification or fail (depending on configuration) to hopefully give visibility into the tokens being used on a repository.
 
 ## Inputs
-### `expiration`
-**Required** The date that the token is set to expire. This should be in the format `YYYY-MM-DD`. Certs that never expire can be added here as well. In this case, the action will simply display the user associated with the token alongside a message that the token never expires. To use this action with a token that never expires, set the expiration date to `0000-00-00`.
 ### `token`
 **Required** The token to check. This should be passed in as a secret. See [GitHub's documentation on secrets](https://docs.github.com/en/actions/reference/encrypted-secrets) for more information.
+### `repository`
+**Required** The repository to check token against. This is probably unnecessary, but is required for now.
 ### `token-name`
 **Optional** How the token is identified. This is helpful (but not required) to provide identifying information about which token is expiring. It displays in the message when the action is run.
 ### `warn-days`
@@ -33,12 +33,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6.0.1
       - name: Test Token Expiration
-        uses: jazzsequence/action-token-expiration@main
+        uses: hardomx/action-token-expiration@main
         with:
-          expiration: '2024-12-01'
           token: ${{ secrets.API_TOKEN }}
+          repository: ${GITHUB_REPOSITORY}
           token-name: 'action-token-expiration test token'
           warn-days: 30
           error-early: true

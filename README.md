@@ -14,8 +14,6 @@ This action was designed to notify repository maintainers of expiring GitHub Per
 **Required** The token to check. This should be passed in as a secret. See [GitHub's documentation on secrets](https://docs.github.com/en/actions/reference/encrypted-secrets) for more information.
 ### `repository`
 **Required** The repository to check token against. This is probably unnecessary, but is required for now.
-### `token-name`
-**Optional** How the token is identified. This is helpful (but not required) to provide identifying information about which token is expiring. It displays in the message when the action is run.
 ### `warn-days`
 **Optional** The number of days before the token expires to warn. This should be an integer. Defaults to `30`.
 ### `error-early`

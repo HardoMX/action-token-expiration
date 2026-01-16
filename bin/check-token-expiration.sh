@@ -3,8 +3,8 @@
 set -euo pipefail
 
 # Accept inputs from action configuration
-token="$1" # The token to check (unused in this script, but you can add logic to use it if needed)
-repository="$2"
+token="$1" # The token to check
+repository="$2" # The repository to check token against. Probably unnecessary, but needed for now
 warn_days="$3" # The number of days before token expiration to start warning
 error_early="$4" # Trigger an error if true, before the token has actually expired
 current_date=$(date +%Y-%m-%d)
@@ -41,7 +41,7 @@ function check_token_expiration() {
         exit 1
     else
         # Display a notice that says how many days are left on the token.
-        echo "${green}${expiration_message}${nc}"
+        echo -e "${green}${expiration_message}${nc}"
     fi
 
     # Display a reminder to add token rotation to the upcoming sprint.

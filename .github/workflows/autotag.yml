@@ -11,5 +11,3 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: pantheon-systems/action-autotag@main
-        with:
-          gh-token: ${{ secrets.GH_TOKEN }}

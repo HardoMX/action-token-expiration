@@ -1,6 +1,6 @@
-name: Check Token Expiration
+name: Check Github Token Expiration
 description: Given a manually-set date passed to the action settings, checks if a given GitHub Personal Access Token has expired.
-author: jazzsequence
+author: HardoMX
 branding:
   icon: shield
   color: green
